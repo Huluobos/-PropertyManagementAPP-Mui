@@ -1,0 +1,161 @@
+<!doctype html>
+<html>
+<!-- 工单首页 -->
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <!-- 定义视口 -->
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"/>
+    <!-- 引入mui控件（包）的css样式表 -->
+    <link href="../css/mui.min.css" rel="stylesheet"/>
+    <!-- 引入自己写的公共的样式表 -->
+    <link href="../css/style.css" rel="stylesheet"/>
+    <!-- 引入本页面独有的样式表 -->
+    <link rel="stylesheet" type="text/css" href="../css/workOrder.css"/>
+    <!-- 内部写一个js脚本，以下脚本是为了控制字体大小，使之在不同分辨率的设备上显示大小差不多的字号 -->
+    <script type="text/javascript">
+        // 获取HTML的DOM
+        var htmlDom = document.getElementsByTagName('html')[0];
+        // 获取设备窗口可展示页面的宽度
+        var htmlWidth = document.documentElement.clientWidth || document.body.clientWidth;
+        // 设置html的fontsize字号，（通过设备窗口宽度定义。设备窗口宽度的十分之一大小）
+        htmlDom.style.fontSize = htmlWidth / 10 + 'px';
+    </script>
+</head>
+
+<body>
+<div class="bottom-bow"></div>
+
+<div id="workOrder">
+    <!-- 上部头部页面名称 -->
+    <header class="mui-bar mui-bar-nav">
+        <h1 class="mui-title" style="color: #fff;">工单</h1>
+    </header>
+    <!-- 粘贴的html 切换菜单 开始	 -->
+    <!-- 切换菜单 -->
+    <div class="tab-list">
+        <!-- v-for循环渲染 js 中的 tabList 值，item是循环的每一项的值，index是循环的序号。   @click点击事件 点击后执行tabListClick函数，参数index -->
+        <div class="list-item" v-for="(item,index) in tabList" @click="tabListClick(index)"
+             :style="num==index?'color:#2A83FF;':''">{{item}}
+        </div>
+        <div class="tab-icon" :style="left"></div>
+    </div>
+    <!-- 粘贴的html 切换菜单 结束	 -->
+
+    <!-- 粘贴的html 切换菜单 开始	 -->
+    <div class="mui-content">
+        <div id="refreshContainer" class="list-container mui-scroll-wrapper" style="top: 2.3466666667rem;">
+            <div class="mui-scroll">
+                <!-- 循环一组假数据-->
+                <div class="list-item" v-for="item in dataT" @click="orderDetails">
+                    <div class="item-type">{{item.type}}</div>
+                    <div class="item-title">{{item.name}}</div>
+                    <div class="item-desc">
+                        <span>{{item.place}}</span>
+                        <span>{{item.time}}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 粘贴的html 切换菜单 结束	 -->
+</div>
+<!-- 引入mui框架的脚本 -->
+<script src="../js/mui.min.js"></script>
+<!-- 引入vue -->
+<script src="../js/vue.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+    // new 一个vue对象，
+    var workOrder = new Vue({
+        el: '#workOrder',	// 规定 该vue对象指向 id = workOrder 的html 模块
+        data: {		// 规定 该vue对象的一些参数
+            num: 0,
+            left: 'left:8%;',
+            tabList: [
+                '待办事项',
+                '审核事项',
+                '完成事项'
+            ],
+            dataT: [
+                {name: "空调维修", type: "业主报修", place: "华理家园12栋1单元1001", time: "13分钟前"},
+                {name: "锅炉维修", type: "业主报修", place: "华理家园13栋2单元1002", time: "14分钟前"},
+                {name: "水表维修", type: "业主报修", place: "华理家园14栋3单元1003", time: "15分钟前"},
+                {name: "地热维修", type: "业主报修", place: "华理家园15栋4单元1004", time: "16分钟前"},
+                {name: "电视维修", type: "业主报修", place: "华理家园16栋5单元1005", time: "17分钟前"},
+                {name: "电视维修", type: "业主报修", place: "华理家园16栋5单元1005", time: "17分钟前"},
+                {name: "电视维修", type: "业主报修", place: "华理家园16栋5单元1005", time: "17分钟前"},
+                {name: "电视维修", type: "业主报修", place: "华理家园16栋5单元1005", time: "17分钟前"},
+            ]
+        },
+        methods: { 	// 规定 该vue对象的一些函数、方法
+            tabListClick: function (id) {
+                this.num = id
+                console.log(this.num)
+                if (this.num == 0) {
+                    this.left = 'left:7%;'
+                }
+                if (this.num == 1) {
+                    this.left = 'left:41%;'
+                } else if (this.num == 2) {
+                    this.left = 'left:74%;'
+                }
+            },
+            orderDetails: function () {
+                mui.openWindow({   //mui跳转页面的方法
+                    url: 'orderDetails/index.html',
+                    id: 'orderDetails/index.html',
+                    extras: {
+                        orderID: "01"
+                    }
+                });
+            }
+        }
+    });
+    mui.init({   //mui.init()    mui插件初始化
+        swipeBack: true, //启用右滑关闭功能
+        pullRefresh: {
+            container: "#refreshContainer", //下拉刷新容器标识，querySelector能定位的css选择器均可，比如：id、.class等
+            down: {
+                style: 'circle', //必选，下拉刷新样式，目前支持原生5+ ‘circle’ 样式
+                auto: true, //可选,默认false.首次加载自动下拉刷新一次
+                callback: refreshData //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+            },
+            up: {
+                height: 50, //可选.默认50.触发上拉加载拖动距离
+                auto: false, //可选,默认false.自动上拉加载一次
+                contentrefresh: "正在加载...", //可选，正在加载状态时，上拉加载控件上显示的标题内容
+                contentnomore: '没有更多数据了', //可选，请求完毕若没有更多数据时显示的提醒内容；
+                callback: loadMoreData //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+            }
+        }
+    });
+
+    mui.plusReady(function () {   //当DOM准备就绪时，指定一个函数来执行。
+        var self = plus.webview.currentWebview();
+        var name = self.name;
+        var version = self.version;
+        console.log(name)
+        console.log(version)
+    })
+
+    function refreshData() {   //下拉事件
+        setTimeout(function () {
+            // 重载id = refreshContainer 的区域
+            mui('#refreshContainer').pullRefresh().endPulldownToRefresh();
+            mui('#refreshContainer').pullRefresh().refresh(true);
+            mui.toast('下拉加载完成')
+        }, 1000)
+    }
+
+    function loadMoreData() {  //上拉事件
+        setTimeout(function () {
+            // 重载id = refreshContainer 的区域
+            mui('#refreshContainer').pullRefresh().endPullupToRefresh(false);
+            mui.toast('上拉更多完成')
+        }, 1000)
+    }
+</script>
+</body>
+
+</html>
